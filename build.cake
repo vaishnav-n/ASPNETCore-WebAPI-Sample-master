@@ -14,7 +14,6 @@ var target= Argument("Argument","OctoPush");
 var buildoutputpath= "D:/Output_build/" ;
 var octopkgpath= "D:/OctoPackages/";
 var packageId = "api_1";
-var semVer = CreateSemVer(1,0,0);
 var sourcepath= "SampleWebApiAspNetCore.sln";
 var BuildNumber = ArgumentOrEnvironmentVariable("build.number", "", "0.0.1-local.0");
 var octopusApiKey=ArgumentOrEnvironmentVariable("OctopusDeployApiKey","");
@@ -64,7 +63,6 @@ Task("Version")
         UpdateAssemblyInfo = true
     };
 
-	SetGitVersionPath(buildServerSettings);
 
 	// Ran twice because the result is empty when using buildserver mode but we need to output to TeamCity
 	// and use the result
@@ -72,7 +70,6 @@ Task("Version")
 
 	GitVersionSettings localSettings = new GitVersionSettings();
 
-	SetGitVersionPath(localSettings);
 
 	var versionResult = GitVersion(localSettings);
 
