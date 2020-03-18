@@ -103,7 +103,7 @@ public void SetGitVersionPath(GitVersionSettings settings)
 	{
 		Information("Using shared GitVersion");
 
-		settings.ToolPath = "c:\\C:\\users\\vaishnavn\\.nuget\\packages\\gitversion\\3.6.5\\gitversion.3.6.5.nupkg";
+		settings.ToolPath = "C:\users\vaishnavn\.nuget\packages\gitversion\3.6.5\gitversion.3.6.5.nupkg";
 	}
 }
 
