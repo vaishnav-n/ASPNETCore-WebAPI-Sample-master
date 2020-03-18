@@ -32,7 +32,7 @@ Task("Restore")
 
 Task("Build")
     .IsDependentOn("Restore")
-	.IsDependentOn("Version")
+    .IsDependentOn("Version")
     .Does(() => 
     {
         MSBuild(sourcepath, new MSBuildSettings()
@@ -50,7 +50,7 @@ Task("OctoPack")
 			BasePath = buildoutputpath,
 			OutFolder = octopkgpath,
 			Overwrite = true,
-			Version = semVer.ToString()
+			Version = BuildNumber
 		};    
 
     OctoPack(packageId,octoPackSettings);
@@ -96,45 +96,6 @@ Task("OctoPush")
         octoPushSettings);
 	});
 
-Task("OctoCreateRelease")
-	.IsDependentOn("OctoPush")
-	.Does(()=>
-	{
-		var createReleaseSettings = new CreateReleaseSettings
-		{
-			Server = octopusServerUrl,
-			ApiKey = octopusApiKey,
-			DeploymentProgress = true,
-			Channel = "Develop",
-			ReleaseNumber = semVer.ToString(),
-			Packages = new Dictionary<string, string>
-			{
-				{packageId, semVer.ToString()}
-			}
-       		 };
-	
-    OctoCreateRelease("app_2",createReleaseSettings);
-  
-	});
-
-Task("OctoDeploy")
-	.IsDependentOn("OctoCreateRelease")
-	.Does(()=>
-	{
-  	  var octoDeploySettings = new OctopusDeployReleaseDeploymentSettings
-    	{
-        	ShowProgress = true,
-        	WaitForDeployment= true
-    	};   
-
-    OctoDeployRelease(
-        octopusServerUrl,
-        octopusApiKey, 
-        "app_2", 
-        releaseEnvironment, 
-        semVer.ToString(),
-        octoDeploySettings);
-	});
 
 public void SetGitVersionPath(GitVersionSettings settings)
 {
