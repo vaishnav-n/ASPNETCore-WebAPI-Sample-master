@@ -1,4 +1,5 @@
 #tool "nuget:?package=OctopusTools&Version=6.7.0"
+#tool "nuget:?package=GitVersion.CommandLine&Version=4.0.0"
 #addin "nuget:?package=Cake.ArgumentHelpers"
 #addin "Cake.Npm"&version=0.8.0
 #addin nuget:?package=Cake.SemVer
@@ -11,17 +12,25 @@ using Newtonsoft.Json;
 using System.IO;
 
 var target= Argument("Argument","Default");
+var BuildNumber = ArgumentOrEnvironmentVariable("build.number", "", "0.0.1-local.0");
 var buildoutputpath= "D:/Output_build/" ;
 var octopkgpath= "D:/OctoPackages/";
-var packageId = "app_2";
-var semVer = CreateSemVer(1,0,0);
-var sourcepath= "D:/Application_2-master/Application_2-master/Application_2.sln";
-var octopusApiKey=EnvironmentVariable("API-OXYIK7IMOBLB12HRG66CLEI24");
+var packageId = "api_1";
+var sourcepath="SampleWebpiAspNetCore.sln";
+var octopusApiKey=ArgumentOrEnvironmentVariable("OctopusDeployApiKey","");
 
-var octopusServerUrl=EnvironmentVariable("http://localhost:81");
+var octopusServerUrl=EnvironmentVariable("http://localhost:83");
 
+Task("Restore")
+    .Does(() =>
+		{
+			NuGetRestore("SampleWebpiAspNetCore.sln");
+		}
+	});
 
 Task("Build")
+	.IsDependentOn("Restore")
+	.IsDependentOn("Version")
     .Does(() => 
     {
         MSBuild(sourcepath, new MSBuildSettings()
@@ -39,7 +48,7 @@ Task("OctoPack")
 			BasePath = buildoutputpath,
 			OutFolder = octopkgpath,
 			Overwrite = true,
-			Version = semVer.ToString()
+			Version = BuildNumber
 		};    
 
     OctoPack(packageId,octoPackSettings);
@@ -54,32 +63,32 @@ Task("OctoPush")
         ReplaceExisting =true
     };
     
-    var physicalFilePath = System.IO.Path.Combine( Directory(octopkgpath), $"{packageId}.{semVer}.nupkg");
     OctoPush(octopusServerUrl, 
         octopusApiKey, 
-        octopkgpath, 
+        GetFiles("D:/OctoPackages/*.*"), 
         octoPushSettings);
 	});
 
-Task("OctoCreateRelease")
-	.IsDependentOn("OctoPush")
-	.Does(()=>
-	{
-		var createReleaseSettings = new CreateReleaseSettings
-		{
-			Server = octopusServerUrl,
-			ApiKey = octopusApiKey,
-			DeploymentProgress = true,
-			Packages = new Dictionary<string, string>
-			{
-				{packageId, semVer.ToString()}
-			}
-        };
+Task("Version")
+  .Does(() =>
+{
+	GitVersionSettings buildServerSettings = new GitVersionSettings {
+		OutputType = GitVersionOutput.BuildServer,
+        UpdateAssemblyInfo = true
+    };
 
-    OctoCreateRelease("app_2", createReleaseSettings);
-	});
+	GitVersion(buildServerSettings);
+
+	GitVersionSettings localSettings = new GitVersionSettings();
+
+	var versionResult = GitVersion(localSettings);
+
+	BuildNumber = versionResult.SemVer;
+	BranchName = versionResult.BranchName;
+});
+
 
 Task("Default")  
-    .IsDependentOn("OctoCreateRelease"); 
+    .IsDependentOn("OctoPush"); 
 
 RunTarget(target);
