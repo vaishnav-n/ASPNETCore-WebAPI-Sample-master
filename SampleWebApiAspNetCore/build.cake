@@ -16,7 +16,7 @@ var BuildNumber = ArgumentOrEnvironmentVariable("build.number", "", "0.0.1-local
 var buildoutputpath= "D:/Output_build/" ;
 var octopkgpath= "D:/OctoPackages/";
 var packageId = "api_1";
-var sourcepath="SampleWebpiAspNetCore.sln";
+var sourcepath="ASPNETCore-WebAPI-Sample-master/SampleWebpiAspNetCore.sln";
 var octopusApiKey=ArgumentOrEnvironmentVariable("OctopusDeployApiKey","");
 string BranchName = null;
 
@@ -25,7 +25,7 @@ var octopusServerUrl=EnvironmentVariable("http://localhost:83");
 Task("Restore")
     .Does(() =>
 	     {
-			NuGetRestore("SampleWebpiAspNetCore.sln");
+			NuGetRestore("ASPNETCore-WebAPI-Sample-master/SampleWebpiAspNetCore.sln");
 	     });
 
 Task("Build")
