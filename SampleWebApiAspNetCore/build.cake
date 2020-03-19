@@ -18,15 +18,15 @@ var octopkgpath= "D:/OctoPackages/";
 var packageId = "api_1";
 var sourcepath="SampleWebpiAspNetCore.sln";
 var octopusApiKey=ArgumentOrEnvironmentVariable("OctopusDeployApiKey","");
+string BranchName = null;
 
 var octopusServerUrl=EnvironmentVariable("http://localhost:83");
 
 Task("Restore")
     .Does(() =>
-		{
+	     {
 			NuGetRestore("SampleWebpiAspNetCore.sln");
-		}
-	});
+	     });
 
 Task("Build")
 	.IsDependentOn("Restore")
