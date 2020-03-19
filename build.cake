@@ -20,7 +20,7 @@ var sourcepath="SampleWebApiAspNetCore.sln";
 var octopusApiKey=ArgumentOrEnvironmentVariable("OctopusDeployApiKey","");
 string BranchName = null;
 
-var octopusServerUrl=EnvironmentVariable("http://localhost:83");
+var octopusServerUrl="http://localhost:83";
 
 Task("Restore")
     .Does(() =>
