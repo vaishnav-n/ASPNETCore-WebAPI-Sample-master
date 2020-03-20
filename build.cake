@@ -79,14 +79,27 @@ Task("Version")
 
 	GitVersion(buildServerSettings);
 
+	SetGitVersionPath(buildServerSettings);
+
 	GitVersionSettings localSettings = new GitVersionSettings();
 
 	var versionResult = GitVersion(localSettings);
+
+	SetGitVersionPath(localSettings)
 
 	BuildNumber = versionResult.SemVer;
 	BranchName = versionResult.BranchName;
 });
 
+public void SetGitVersionPath(GitVersionSettings settings)
+{
+	if (TeamCity.IsRunningOnTeamCity)
+	{
+		Information("Using shared GitVersion");
+
+		settings.ToolPath = "C:\Users\vaishnavn\.nuget\packages\gitversion.commandline\4.0.0\tools\gitversion.exe";
+	}
+}
 
 Task("Default")  
     .IsDependentOn("OctoPush"); 
