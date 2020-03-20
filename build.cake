@@ -85,7 +85,7 @@ Task("Version")
 
 	var versionResult = GitVersion(localSettings);
 
-	SetGitVersionPath(localSettings)
+	SetGitVersionPath(localSettings);
 
 	BuildNumber = versionResult.SemVer;
 	BranchName = versionResult.BranchName;
@@ -97,7 +97,7 @@ public void SetGitVersionPath(GitVersionSettings settings)
 	{
 		Information("Using shared GitVersion");
 
-		settings.ToolPath = "C:\Users\vaishnavn\.nuget\packages\gitversion.commandline\4.0.0\tools\gitversion.exe";
+		settings.ToolPath = "C:\\Users\\vaishnavn\\.nuget\\packages\\gitversion.commandline\\4.0.0\\tools\\gitversion.exe";
 	}
 }
 
